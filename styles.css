@@ -369,6 +369,247 @@ button{font-family:inherit;cursor:pointer;border:none}
 .admin-tab.active{background:var(--mesaya);color:#fff}
 .admin-thumb.audio{display:grid;place-items:center;font-size:1.5rem;background:color-mix(in srgb,var(--c,#888) 16%,#fff);border:1px solid var(--line)}
 
+/* ---------- ปุ่มทดสอบความรู้ (splash) ---------- */
+.btn-quiz{
+  margin-top:14px;background:var(--sun);color:#5a3d00;font-family:"Itim";font-size:1.15rem;
+  padding:.55em 1.7em;border-radius:999px;box-shadow:0 8px 0 rgba(0,0,0,.14);
+  transition:transform .15s var(--ease),box-shadow .15s;
+}
+.btn-quiz:hover{transform:translateY(-3px)}
+.btn-quiz:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.quiz-btn{color:var(--thanchanok)}
+.quiz-btn:hover{border-color:var(--thanchanok);color:var(--thanchanok)}
+
+/* ---------- เกมทดสอบความรู้ ---------- */
+.quiz{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;
+  background:linear-gradient(160deg,#fff7ef,#ffe9f3);padding:16px;overflow-y:auto}
+.quiz.hidden{display:none}
+.quiz-inner{position:relative;width:min(560px,100%);background:#fff;border-radius:var(--r-lg);
+  box-shadow:var(--shadow);padding:26px 22px;animation:pop .35s var(--ease)}
+.quiz-x{position:absolute;top:12px;right:12px}
+.quiz-screen{text-align:center}
+.quiz-mascot{display:inline-block;animation:bob 5s ease-in-out infinite}
+.quiz-h{font-size:1.7rem;color:var(--yolada);margin:6px 0}
+.quiz-desc{color:var(--ink-soft);line-height:1.6;margin-bottom:10px}
+.quiz-mode{font-size:.82rem;color:var(--thanchanok);font-weight:600;margin-bottom:16px}
+.quiz-cta{display:block;width:100%;margin:8px 0;color:var(--yolada);box-shadow:0 7px 0 #f0d2e0;background:#fff}
+.btn-quiz-ghost{display:block;width:100%;background:transparent;color:var(--ink-soft);font-size:1rem;padding:10px;border-radius:12px}
+.btn-quiz-ghost:hover{color:var(--yolada)}
+
+/* หน้าเล่น */
+.quiz-bar-top{display:flex;justify-content:space-between;align-items:center;font-size:.95rem;font-weight:600;color:var(--ink-soft);margin-bottom:8px}
+.quiz-time{font-variant-numeric:tabular-nums;color:var(--yolada)}
+.quiz-progressbar{height:10px;background:#F0E6DC;border-radius:999px;overflow:hidden;margin-bottom:16px}
+.quiz-progressfill{height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--yolada));border-radius:999px;transition:width .35s var(--ease)}
+.quiz-topic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:600;color:var(--mesaya);margin-bottom:10px;font-size:.95rem}
+.quiz-topic-no{background:var(--mesaya);color:#fff;font-family:"Itim";width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.9rem}
+.quiz-topic small{color:var(--ink-soft);font-weight:400}
+.quiz-q{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:6px 0 18px;text-align:left}
+.quiz-choices{display:flex;flex-direction:column;gap:10px}
+.quiz-choice{
+  display:flex;align-items:center;gap:11px;text-align:left;background:#fff;border:2px solid var(--line);
+  border-radius:14px;padding:13px 15px;font-size:1rem;color:var(--ink);transition:transform .12s var(--ease),border-color .15s,background .15s;
+}
+.quiz-choice:hover:not(:disabled){border-color:var(--yolada);transform:translateY(-2px)}
+.quiz-choice-key{flex:none;width:28px;height:28px;border-radius:8px;background:#F4ECF8;color:var(--mesaya);font-family:"Itim";display:grid;place-items:center}
+.quiz-choice.correct{border-color:var(--thanchanok);background:#E6FAF6}
+.quiz-choice.correct .quiz-choice-key{background:var(--thanchanok);color:#fff}
+.quiz-choice.wrong{border-color:#E0533B;background:#FDECE8}
+.quiz-choice.wrong .quiz-choice-key{background:#E0533B;color:#fff}
+.quiz-choice:disabled{cursor:default}
+
+/* หน้าผล + ชื่อ */
+.quiz-input{width:100%;font-family:inherit;font-size:1.05rem;padding:12px 16px;border:2px solid var(--line);border-radius:14px;margin:10px 0;text-align:center}
+.quiz-input:focus{outline:none;border-color:var(--yolada)}
+.quiz-savemsg{min-height:1.1em;font-size:.9rem;color:var(--thanchanok);font-weight:600}
+
+/* อันดับ */
+.quiz-lb-list{display:flex;flex-direction:column;gap:7px;margin:14px 0;max-height:50vh;overflow-y:auto;text-align:left}
+.quiz-lb-row{display:flex;align-items:center;gap:10px;background:#FBF7F2;border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.quiz-lb-row.me{background:#FFF0F6;border-color:var(--yolada);box-shadow:0 0 0 2px rgba(255,61,139,.2)}
+.quiz-lb-rank{flex:none;width:30px;text-align:center;font-family:"Itim";font-size:1.1rem}
+.quiz-lb-name{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quiz-lb-score{flex:none;font-family:"Itim";color:var(--yolada);font-size:1.05rem}
+.quiz-lb-time{flex:none;font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.quiz-lb-empty{color:var(--ink-soft);padding:20px}
+.quiz-lb-actions{display:flex;flex-direction:column;gap:6px}
+
+@media (max-width:560px){
+  .quiz-inner{padding:20px 16px}
+  .quiz-h{font-size:1.4rem}
+  .quiz-q{font-size:1.08rem}
+  .quiz-choice{font-size:.95rem;padding:12px}
+}
+
+/* ===================== โหมดผจญภัย ===================== */
+.btn-story{margin-top:12px;background:linear-gradient(135deg,#7C4DFF,#5b35cc);color:#fff;font-family:"Itim";
+  font-size:1.1rem;padding:.55em 1.6em;border-radius:999px;box-shadow:0 8px 0 rgba(0,0,0,.18);transition:transform .15s var(--ease),box-shadow .15s}
+.btn-story:hover{transform:translateY(-3px)}
+.btn-story:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.story-btn{color:var(--mesaya)}
+.story-btn:hover{border-color:var(--mesaya);color:var(--mesaya)}
+
+.story{position:fixed;inset:0;z-index:1350;background:linear-gradient(160deg,#efeaff,#fff0f6);overflow-y:auto;padding:14px}
+.story.hidden{display:none}
+.story-inner{position:relative;width:min(620px,100%);margin:0 auto;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 18px;min-height:80vh;animation:pop .35s var(--ease)}
+.story-screen{text-align:center}
+.story-h{font-size:1.5rem;color:var(--mesaya);margin:8px 0;line-height:1.3}
+.story-sub{color:var(--ink-soft);line-height:1.65;margin-bottom:12px}
+
+/* แผนที่ด่าน */
+.story-map-head{text-align:center;margin-bottom:14px}
+.story-map-mascot{display:inline-block;animation:bob 5s ease-in-out infinite}
+.story-keys{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:10px 0 4px}
+.story-keychip{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#F0E6DC;font-size:1rem}
+.story-keychip.got{background:#FFF0C2;box-shadow:0 0 0 2px var(--sun)}
+.story-progress-text{font-family:"Itim";color:var(--mesaya)}
+.story-nodes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.story-node{display:flex;align-items:center;gap:10px;text-align:left;background:#fff;border:2px solid var(--line);
+  border-radius:var(--r-md);padding:11px 12px;box-shadow:var(--shadow-sm);position:relative;transition:transform .15s var(--ease),border-color .2s}
+.story-node:not(.locked):hover{transform:translateY(-3px);border-color:var(--mesaya)}
+.story-node.locked{opacity:.55;filter:grayscale(.5);cursor:not-allowed}
+.story-node.fin{border-color:var(--sun);background:#FFFCF2}
+.story-node-key{flex:none;width:38px;height:38px;border-radius:50%;background:var(--mesaya);color:#fff;font-family:"Itim";display:grid;place-items:center;font-size:1.1rem}
+.story-node.fin .story-node-key{background:transparent;font-size:1.5rem}
+.story-node-title{font-weight:600;font-size:.92rem;line-height:1.2}
+.story-node-title small{display:block;font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.story-node-check{position:absolute;top:6px;right:8px;color:var(--thanchanok);font-weight:700}
+
+/* ฉากเล่าเรื่อง */
+.story-bg{position:absolute;inset:0;border-radius:var(--r-lg);overflow:hidden;opacity:.32}
+.story-bg svg,.story-bg img{width:100%;height:100%;object-fit:cover}
+.story-scene-fg{position:relative;min-height:74vh;display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.story-mascot{align-self:center;margin-bottom:auto;margin-top:14px;animation:bob 5s ease-in-out infinite;transition:opacity .3s}
+.story-dialogue{background:rgba(255,255,255,.94);border:2px solid #E3D8F5;border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);text-align:left}
+.story-who{display:inline-block;background:var(--mesaya);color:#fff;font-family:"Itim";font-size:.9rem;padding:2px 14px;border-radius:999px;margin-bottom:8px}
+.story-text{font-size:1.1rem;line-height:1.6;min-height:3.2em;color:var(--ink)}
+.story-next{margin-top:12px;background:var(--mesaya);color:#fff;font-family:"Itim";font-size:1.05rem;padding:9px 22px;border-radius:999px;float:right;transition:transform .12s var(--ease)}
+.story-next:hover{transform:translateY(-2px)}
+
+.story-key-icon{font-size:4.5rem;animation:pop .5s var(--ease);filter:drop-shadow(0 8px 12px rgba(0,0,0,.2))}
+
+/* จบเกม */
+.story-emblem{position:relative;width:180px;height:180px;margin:6px auto 4px}
+.story-emblem-core{position:absolute;inset:0;display:grid;place-items:center;font-size:3.4rem;animation:pop .6s var(--ease)}
+.story-keys-orbit{position:absolute;inset:0;animation:spin 22s linear infinite}
+.story-keys-orbit .story-keychip{position:absolute;top:50%;left:50%;margin:-15px;transform:rotate(var(--a)) translateY(-84px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.story-end-say{display:flex;gap:12px;align-items:flex-start;text-align:left;margin:14px 0}
+.story-end-mascot{flex:none;animation:bob 5s ease-in-out infinite}
+.story-end-bubble{background:#F4EFFF;border:2px solid #E3D8F5;border-radius:14px;padding:12px 14px}
+.story-end-bubble strong{color:var(--mesaya);font-family:"Itim"}
+.story-end-bubble p{line-height:1.6;margin-top:4px}
+.story-vow{background:#FFF0F6;border:1px dashed var(--yolada);border-radius:14px;padding:12px 14px;line-height:1.7;color:var(--ink);margin-bottom:16px}
+.story-medal{display:flex;align-items:center;gap:14px;justify-content:center;background:linear-gradient(135deg,#FFF7E0,#FFE9C2);border-radius:18px;padding:16px;margin-bottom:18px}
+.story-medal-disc{position:relative;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE08A,#E0A21A);display:grid;place-items:center;font-size:2.4rem;box-shadow:0 8px 18px rgba(180,130,20,.4);overflow:hidden}
+.story-medal-shine{position:absolute;top:-60%;left:-30%;width:50%;height:220%;background:rgba(255,255,255,.55);transform:rotate(25deg);animation:shine 2.6s ease-in-out infinite}
+@keyframes shine{0%,100%{left:-40%}50%{left:120%}}
+.story-medal-label{text-align:left;line-height:1.35}
+.story-medal-label b{color:#B5820F;letter-spacing:.5px}
+.story-medal-label small{color:var(--ink-soft)}
+
+/* ===================== มินิเกม ===================== */
+.mg-stage{min-height:62vh;transition:box-shadow .2s}
+.mg-stage.mg-ok{box-shadow:inset 0 0 0 4px var(--thanchanok)}
+.mg-stage.mg-no{box-shadow:inset 0 0 0 4px #E0533B}
+.mg-head h3{font-size:1.25rem;color:var(--mesaya)}
+.mg-head p{color:var(--ink-soft);margin:4px 0 14px;line-height:1.5}
+.mg-status{margin-top:14px;font-size:1.05rem;font-family:"Itim";color:var(--ink)}
+.mg-status b{color:var(--yolada);font-size:1.2rem}
+.mg-hitbtn{background:var(--yolada);color:#fff;font-family:"Itim";font-size:1.15rem;padding:12px 28px;border-radius:999px;box-shadow:0 6px 0 #d22e72;transition:transform .1s var(--ease)}
+.mg-hitbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #d22e72}
+.mg-hitbtn.big{font-size:1.4rem;padding:16px 40px}
+
+/* 1 ดอกไม้ร่วง */
+.mg-fallarea{position:relative;height:50vh;overflow:hidden;border-radius:14px;background:linear-gradient(#fff,#fff4e6)}
+.mg-fall{position:absolute;top:-12%;font-size:2rem;background:none;animation:fall linear forwards;cursor:pointer}
+@keyframes fall{to{top:112%}}
+
+/* 2/5 grid */
+.mg-grid{display:grid;gap:10px;max-width:340px;margin:0 auto}
+.mg-grid.g3{grid-template-columns:repeat(3,1fr)}
+.mg-cell{position:relative;aspect-ratio:1;font-size:2.2rem;background:#FBF4EA;border:2px solid var(--line);border-radius:14px;transition:transform .1s}
+.mg-cell:hover{transform:scale(1.05)}
+.mg-badge{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:.62rem;background:var(--yolada);color:#fff;padding:1px 6px;border-radius:999px;white-space:nowrap}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.mg-hole{aspect-ratio:1;font-size:2rem;background:#EFE6D8;border:2px solid var(--line);border-radius:50%;transition:transform .1s}
+.mg-hole.pop{transform:scale(1.15);background:#E6FAF6}
+.mg-hole.bad{background:#FDECE8}
+
+/* 3 เขาวงกต */
+.mg-maze{display:inline-block;background:#5b3a1d;padding:6px;border-radius:12px;margin-bottom:14px}
+.mg-mrow{display:flex}
+.mg-mcell{width:38px;height:38px;display:grid;place-items:center;font-size:1.4rem;background:#cde6b5;margin:1px;border-radius:5px}
+.mg-mcell.wall{background:#5b3a1d}
+.mg-dpad{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mg-dpad div{display:flex;gap:6px}
+.mg-dpad button{width:54px;height:46px;font-size:1.3rem;background:var(--mesaya);color:#fff;border-radius:12px;box-shadow:0 4px 0 #5a35cc}
+.mg-dpad button:active{transform:translateY(3px);box-shadow:0 1px 0 #5a35cc}
+
+/* 4 จับคู่ */
+.mg-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:0 auto}
+.mg-card{aspect-ratio:.8;background:none;perspective:600px}
+.mg-card-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .4s var(--ease)}
+.mg-card.flip .mg-card-in,.mg-card.done .mg-card-in{transform:rotateY(180deg)}
+.mg-card-f,.mg-card-b{position:absolute;inset:0;display:grid;place-items:center;border-radius:12px;backface-visibility:hidden;font-size:1.8rem}
+.mg-card-f{background:var(--mesaya);color:#fff;font-family:"Itim"}
+.mg-card-b{background:#FFF7E6;border:2px solid var(--sun);transform:rotateY(180deg)}
+.mg-card.done{opacity:.65}
+
+/* 6 หายใจ */
+.mg-breath{display:grid;place-items:center;height:42vh}
+.mg-breath-circle{width:170px;height:170px;border-radius:50%;background:conic-gradient(var(--thanchanok) calc(var(--p,0)*1turn),#E4EEEC 0);display:grid;place-items:center;position:relative;transition:transform .2s}
+.mg-breath-circle::after{content:"";position:absolute;inset:14px;border-radius:50%;background:#fff}
+.mg-breath-circle.full{transform:scale(1.06)}
+.mg-breath-circle span{position:relative;z-index:1;font-family:"Itim";color:var(--thanchanok);font-size:1.1rem}
+
+/* 7 ปัดฝุ่น */
+.mg-scratch{position:relative;width:100%;max-width:360px;height:220px;margin:0 auto;border-radius:14px;overflow:hidden;border:2px solid var(--line)}
+.mg-scratch-img{position:absolute;inset:0}
+.mg-scratch-img svg,.mg-scratch-img img{width:100%;height:100%;object-fit:cover}
+.mg-scratch canvas{position:absolute;inset:0;touch-action:none;cursor:grab}
+
+/* 8 ระฆัง */
+.mg-track{position:relative;height:28px;background:#EFE6D8;border-radius:999px;margin:24px auto 18px;max-width:380px;overflow:hidden}
+.mg-zone{position:absolute;left:40%;width:20%;top:0;bottom:0;background:rgba(20,184,166,.45)}
+.mg-marker{position:absolute;top:-4px;width:6px;height:36px;background:var(--yolada);border-radius:3px;left:0}
+
+/* 9 ปล่อยน้ำ */
+.mg-tank{position:relative;width:120px;height:200px;margin:8px auto 16px;background:#EAF4FB;border:3px solid #9AD0E8;border-radius:14px;overflow:hidden}
+.mg-band{position:absolute;left:0;right:0;bottom:55%;height:20%;background:rgba(20,184,166,.4);z-index:1}
+.mg-water{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#5fb6e8,#2e86c1)}
+
+/* 10 กังหัน */
+.mg-wind{height:30vh;display:grid;place-items:center}
+.mg-fan{font-size:4.5rem}
+.mg-meter{height:16px;background:#EFE6D8;border-radius:999px;overflow:hidden;max-width:360px;margin:14px auto 0}
+.mg-meter-fill{height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--thanchanok));transition:width .1s}
+
+/* 11 หาภาพซ่อน */
+.mg-hidden{position:relative;width:100%;max-width:400px;height:260px;margin:0 auto;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:#caa66f}
+.mg-hidden-bg{position:absolute;inset:0;opacity:.85}
+.mg-hidden-bg svg,.mg-hidden-bg img{width:100%;height:100%;object-fit:cover}
+.mg-spot{position:absolute;transform:translate(-50%,-50%);font-size:1.5rem;opacity:.22;filter:saturate(.4);background:none;transition:opacity .2s,transform .2s}
+.mg-spot:hover{opacity:.5}
+.mg-spot.got{opacity:1;filter:none;transform:translate(-50%,-50%) scale(1.25);background:rgba(255,255,255,.6);border-radius:50%}
+
+/* 12 simon */
+.mg-simon{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:260px;margin:0 auto 4px}
+.mg-pad{aspect-ratio:1;font-size:2.4rem;color:#fff;background:var(--pc);border-radius:16px;opacity:.6;transition:opacity .15s,transform .1s;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.mg-pad.lit{opacity:1;transform:scale(1.05)}
+.mg-pad:active{transform:translateY(3px)}
+
+@media (max-width:560px){
+  .story-inner{padding:18px 14px}
+  .story-nodes{grid-template-columns:1fr}
+  .story-h{font-size:1.3rem}
+  .story-text{font-size:1.02rem}
+  .mg-mcell{width:34px;height:34px;font-size:1.2rem}
+  .story-medal{flex-direction:column;text-align:center}
+  .story-medal-label{text-align:center}
+}
+
 /* Confetti + celebrate */
 .confetti-canvas{position:fixed;inset:0;z-index:1500;pointer-events:none}
 .celebrate{position:fixed;inset:0;z-index:1400;display:grid;place-items:center;background:rgba(44,35,54,.55);padding:20px}

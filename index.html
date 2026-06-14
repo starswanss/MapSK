@@ -17,7 +17,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
 
@@ -28,7 +28,9 @@
       <h1 class="splash-title">ยลดา<span>พาทัวร์</span></h1>
       <p class="splash-sub">ผจญภัยไปกับเส้นทางจีโอพาร์คโคราช 🗺️</p>
       <button id="startBtn" class="btn-start">เริ่มออกเดินทาง</button>
-      <p class="splash-hint">นำทางโดย ยลดา · เมษยา · ปัญญา · ธัญชนก</p>
+      <button id="openQuizBtn" class="btn-quiz">🧠 ทดสอบความรู้กันเลยย!!</button>
+      <button id="openStoryBtn" class="btn-story">⚔️ โหมดผจญภัย — ตามรอยจีโอพาร์ค</button>
+      <p class="splash-hint">นำทางโดย ยลดา · เมษยา · ปัญญา · ธัญชนก · แม่หน่อย</p>
     </div>
     <div class="splash-bg-blobs"><span></span><span></span><span></span></div>
   </div>
@@ -45,6 +47,18 @@
           <p>เส้นทางจีโอพาร์คโคราช</p>
         </div>
       </div>
+
+      <!-- ปุ่มโหมดผจญภัย -->
+      <button id="openStoryBtnApp" class="admin-btn story-btn" title="โหมดผจญภัย">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="m6.9 2l4.6 4.6L13 5.1l1.4 1.4l-1.5 1.5L21 16.1V21h-4.9l-7.9-7.9L6.7 14.6L5.3 13.2L6.8 11.7L2.1 7L6.9 2m0 2.8L4.9 6.8l8.3 8.3l2-2L6.9 4.8M16.5 19H19v-2.5l-1.2-1.2l-2.5 2.5z"/></svg>
+        <span class="admin-btn-text">ผจญภัย</span>
+      </button>
+
+      <!-- ปุ่มทดสอบความรู้ -->
+      <button id="openQuizBtnApp" class="admin-btn quiz-btn" title="ทดสอบความรู้">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M11 18h2v-2h-2zm1-16a10 10 0 1 0 0 20a10 10 0 0 0 0-20m0 5a3 3 0 0 1 3 3c0 2-3 1.75-3 4h-2c0-2.75 3-3 3-4a1 1 0 1 0-2 0H9a3 3 0 0 1 3-3"/></svg>
+        <span class="admin-btn-text">ทดสอบความรู้</span>
+      </button>
 
       <!-- ปุ่มจัดการอัพโหลด -->
       <button id="adminBtn" class="admin-btn" title="จัดการอัพโหลด รูป &amp; เสียง">
@@ -186,6 +200,98 @@
     </div>
   </div>
 
+  <!-- ===== เกมทดสอบความรู้ ===== -->
+  <div id="quiz" class="quiz hidden">
+    <div class="quiz-inner">
+      <button id="quizClose" class="detail-close quiz-x" aria-label="ปิด">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29l-1.41 1.42L10.59 13.4l-6.3 6.3l-1.41-1.42L9.17 12L2.88 5.71L4.29 4.3l6.3 6.29l6.29-6.29z"/></svg>
+      </button>
+
+      <!-- หน้าเริ่ม -->
+      <section id="quizIntro" class="quiz-screen">
+        <div id="quizMascot" class="quiz-mascot"></div>
+        <h2 class="quiz-h">🧠 ทดสอบความรู้กันเลยย!!</h2>
+        <p class="quiz-desc">12 ข้อ สุ่มจาก 12 หัวข้อจีโอพาร์คโคราช<br/>ตอบถูกได้คะแนน · ถ้าคะแนนเท่ากัน “เร็วกว่าชนะ”</p>
+        <p id="quizModeNote" class="quiz-mode"></p>
+        <button id="quizStart" class="btn-start quiz-cta">เริ่มทำแบบทดสอบ</button>
+        <button id="quizShowLb" class="btn-quiz-ghost">🏆 ดูอันดับคะแนน</button>
+      </section>
+
+      <!-- หน้าเล่น -->
+      <section id="quizPlay" class="quiz-screen hidden">
+        <div class="quiz-bar-top">
+          <span id="quizProgress" class="quiz-prog"></span>
+          <span id="quizTimer" class="quiz-time">⏱ 00:00</span>
+        </div>
+        <div class="quiz-progressbar"><div id="quizBar" class="quiz-progressfill"></div></div>
+        <div id="quizTopic" class="quiz-topic"></div>
+        <h3 id="quizQ" class="quiz-q"></h3>
+        <div id="quizChoices" class="quiz-choices"></div>
+      </section>
+
+      <!-- หน้าผลคะแนน -->
+      <section id="quizResult" class="quiz-screen hidden">
+        <h2 id="quizScoreText" class="quiz-h"></h2>
+        <p id="quizTimeText" class="quiz-desc"></p>
+        <input id="quizName" class="quiz-input" type="text" maxlength="24" placeholder="ใส่ชื่อของคุณ (ไม่ต้องล็อกอิน)" />
+        <p id="quizSaveMsg" class="quiz-savemsg"></p>
+        <button id="quizSave" class="btn-start quiz-cta">บันทึกคะแนนลงอันดับ</button>
+        <button id="quizRetry" class="btn-quiz-ghost">เล่นอีกครั้ง</button>
+      </section>
+
+      <!-- หน้าอันดับ -->
+      <section id="quizLb" class="quiz-screen hidden">
+        <h2 class="quiz-h">🏆 อันดับคะแนน</h2>
+        <div id="quizLbList" class="quiz-lb-list"></div>
+        <div class="quiz-lb-actions">
+          <button id="quizLbBack" class="btn-start quiz-cta">เล่นอีกครั้ง</button>
+          <button id="quizLbClose" class="btn-quiz-ghost">ปิด</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ===== โหมดผจญภัย (เนื้อเรื่อง + มินิเกม) ===== -->
+  <div id="story" class="story hidden">
+    <div class="story-inner">
+      <button id="storyClose" class="detail-close quiz-x" aria-label="ปิด">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29l-1.41 1.42L10.59 13.4l-6.3 6.3l-1.41-1.42L9.17 12L2.88 5.71L4.29 4.3l6.3 6.29l6.29-6.29z"/></svg>
+      </button>
+
+      <!-- เลือกด่าน -->
+      <section id="storyMap" class="story-screen"></section>
+
+      <!-- ฉากเล่าเรื่อง -->
+      <section id="storyScene" class="story-screen hidden">
+        <div id="storyBg" class="story-bg"></div>
+        <div class="story-scene-fg">
+          <div id="storyMascot" class="story-mascot"></div>
+          <div class="story-dialogue">
+            <span id="storyWho" class="story-who"></span>
+            <p id="storyText" class="story-text"></p>
+            <button id="storyNext" class="story-next">ถัดไป ▶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- มินิเกม -->
+      <section id="storyGame" class="story-screen hidden">
+        <div id="mgStage" class="mg-stage"></div>
+      </section>
+
+      <!-- ได้กุญแจ -->
+      <section id="storyKey" class="story-screen hidden">
+        <div id="storyKeyIcon" class="story-key-icon"></div>
+        <h2 id="storyKeyName" class="story-h"></h2>
+        <p id="storyKeyDesc" class="story-sub"></p>
+        <button id="storyKeyNext" class="btn-start">ไปต่อ ▶</button>
+      </section>
+
+      <!-- จบเกม -->
+      <section id="storyEnd" class="story-screen hidden"></section>
+    </div>
+  </div>
+
   <!-- เลเยอร์คอนเฟตตี / ฉลอง -->
   <canvas id="confetti" class="confetti-canvas"></canvas>
   <div id="celebrate" class="celebrate hidden">
@@ -197,10 +303,12 @@
     </div>
   </div>
 
-  <script src="config.js?v=5"></script>
-  <script src="data.js?v=5"></script>
-  <script src="districts.js?v=5"></script>
-  <script src="app.js?v=5"></script>
-  <script src="admin.js?v=5"></script>
+  <script src="config.js?v=7"></script>
+  <script src="data.js?v=7"></script>
+  <script src="districts.js?v=7"></script>
+  <script src="app.js?v=7"></script>
+  <script src="admin.js?v=7"></script>
+  <script src="quiz.js?v=7"></script>
+  <script src="story.js?v=7"></script>
 </body>
 </html>
