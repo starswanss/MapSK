@@ -549,8 +549,8 @@ button{font-family:inherit;cursor:pointer;border:none}
 
 /* 4 จับคู่ */
 .mg-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:0 auto}
-.mg-card{aspect-ratio:.8;background:none;perspective:600px}
-.mg-card-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .4s var(--ease)}
+.mg-card{position:relative;aspect-ratio:.8;background:none;border:none;padding:0;perspective:600px;cursor:pointer}
+.mg-card-in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .4s var(--ease)}
 .mg-card.flip .mg-card-in,.mg-card.done .mg-card-in{transform:rotateY(180deg)}
 .mg-card-f,.mg-card-b{position:absolute;inset:0;display:grid;place-items:center;border-radius:12px;backface-visibility:hidden;font-size:1.8rem}
 .mg-card-f{background:var(--mesaya);color:#fff;font-family:"Itim"}
