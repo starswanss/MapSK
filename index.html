@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ยลดาพาทัวร์ · เส้นทางจีโอพาร์คโคราช</title>
+  <meta name="description" content="แอปพลิเคชันแผนที่ + เกมท่องเที่ยวเส้นทางจีโอพาร์คโคราช นำเที่ยวโดยยลดาและผองเพื่อน" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Itim&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet (แผนที่แบบไม่ต้องใช้ API key) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <link rel="stylesheet" href="styles.css?v=5" />
+</head>
+<body>
+
+  <!-- ===== หน้าเปิดตัว (Splash) ===== -->
+  <div id="splash" class="splash">
+    <div class="splash-inner">
+      <div id="splashMascot" class="splash-mascot"></div>
+      <h1 class="splash-title">ยลดา<span>พาทัวร์</span></h1>
+      <p class="splash-sub">ผจญภัยไปกับเส้นทางจีโอพาร์คโคราช 🗺️</p>
+      <button id="startBtn" class="btn-start">เริ่มออกเดินทาง</button>
+      <p class="splash-hint">นำทางโดย ยลดา · เมษยา · ปัญญา · ธัญชนก</p>
+    </div>
+    <div class="splash-bg-blobs"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- ===== แอปหลัก ===== -->
+  <div id="app" class="app hidden">
+
+    <!-- แถบหัว -->
+    <header class="topbar">
+      <div class="brand">
+        <div id="brandMascot" class="brand-mascot"></div>
+        <div class="brand-text">
+          <h1>ยลดา<span>พาทัวร์</span></h1>
+          <p>เส้นทางจีโอพาร์คโคราช</p>
+        </div>
+      </div>
+
+      <!-- ปุ่มจัดการอัพโหลด -->
+      <button id="adminBtn" class="admin-btn" title="จัดการอัพโหลด รูป &amp; เสียง">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M11 14.99V19h2v-4.01h3L12 9l-4 5.99zM19.35 10.04A7.49 7.49 0 0 0 5.06 8.05A6 6 0 0 0 6 20h12.5a4.5 4.5 0 0 0 .85-8.96M19 18H6a4 4 0 0 1-.55-7.96l.79-.11l.37-.7a5.5 5.5 0 0 1 10.4 1.41l.18.84l.86.06A2.5 2.5 0 0 1 19 18"/></svg>
+        <span class="admin-btn-text">จัดการอัพโหลด</span>
+      </button>
+
+      <!-- พาสปอร์ตจีโอพาร์ค -->
+      <div class="passport">
+        <div class="passport-label">
+          <span class="passport-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M6 2h11a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m6 4a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4M8 17h8v1.5H8z"/></svg>
+          </span>
+          พาสปอร์ตจีโอพาร์ค
+        </div>
+        <div class="passport-bar"><div id="passportFill" class="passport-fill"></div></div>
+        <div class="passport-count"><span id="stampCount">0</span>/12 ดวงตรา</div>
+      </div>
+    </header>
+
+    <!-- โซนตัวละครทีมผู้นำทาง -->
+    <section class="crew" aria-label="ทีมนำทาง">
+      <div id="crewYolada" class="crew-card crew-lead"></div>
+      <div class="crew-followers" id="crewFollowers"></div>
+    </section>
+
+    <!-- เลือกอำเภอ -->
+    <section class="districts-bar" aria-label="เลือกอำเภอ">
+      <div class="districts-bar-label">🏞️ เลือกอำเภอ — ไฮไลท์โซนบนแผนที่ & อ่านบทประพันธ์</div>
+      <div id="districtChips" class="district-chips"></div>
+    </section>
+
+    <!-- เนื้อหาหลัก: รายการสถานที่ + แผนที่ -->
+    <main class="layout">
+      <aside class="places-panel" aria-label="รายการสถานที่">
+        <div class="places-head">
+          <h2>จุดหมาย 12 แห่ง</h2>
+          <p>กดที่การ์ดหรือหมุดบนแผนที่เพื่อดูข้อมูล</p>
+        </div>
+        <ul id="placeList" class="place-list"></ul>
+      </aside>
+
+      <div class="map-wrap">
+        <div id="map" role="application" aria-label="แผนที่เส้นทางจีโอพาร์ค"></div>
+        <button id="recenterBtn" class="map-fab" title="กลับไปดูเส้นทางทั้งหมด" aria-label="ดูเส้นทางทั้งหมด">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8m8.94 3A8.99 8.99 0 0 0 13 3.06V1h-2v2.06A8.99 8.99 0 0 0 3.06 11H1v2h2.06A8.99 8.99 0 0 0 11 20.94V23h2v-2.06A8.99 8.99 0 0 0 20.94 13H23v-2zM12 19a7 7 0 1 1 0-14a7 7 0 0 1 0 14"/></svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== แผงรายละเอียดสถานที่ (Drawer) ===== -->
+  <div id="detail" class="detail" aria-hidden="true">
+    <div class="detail-scrim" id="detailScrim"></div>
+    <div class="detail-card" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <button id="detailClose" class="detail-close" aria-label="ปิด">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29l-1.41 1.42L10.59 13.4l-6.3 6.3l-1.41-1.42L9.17 12L2.88 5.71L4.29 4.3l6.3 6.29l6.29-6.29z"/></svg>
+      </button>
+
+      <div class="detail-hero">
+        <div id="detailImage" class="detail-image"></div>
+        <div class="detail-hero-overlay">
+          <span id="detailDistrict" class="detail-district"></span>
+          <h2 id="detailTitle" class="detail-title"></h2>
+        </div>
+      </div>
+
+      <!-- ยลดาแนะนำ -->
+      <div class="yolada-say">
+        <div id="yoladaBubbleMascot" class="bubble-mascot"></div>
+        <p id="yoladaQuote" class="yolada-quote"></p>
+      </div>
+
+      <!-- แท็บตัวละคร -->
+      <div class="tabs" role="tablist">
+        <button class="tab" data-tab="geology" role="tab"><span class="tab-dot" style="background:#F97316"></span>ปัญญา · ธรณีวิทยา</button>
+        <button class="tab" data-tab="history" role="tab"><span class="tab-dot" style="background:#7C4DFF"></span>เมษยา · ประวัติ</button>
+        <button class="tab" data-tab="tips" role="tab"><span class="tab-dot" style="background:#14B8A6"></span>ธัญชนก · Tips</button>
+      </div>
+
+      <div id="tabBody" class="tab-body"></div>
+
+      <div class="detail-actions">
+        <button id="checkinBtn" class="btn-checkin"></button>
+        <a id="navBtn" class="btn-nav" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5A2.5 2.5 0 0 1 9.5 9A2.5 2.5 0 0 1 12 6.5A2.5 2.5 0 0 1 14.5 9a2.5 2.5 0 0 1-2.5 2.5"/></svg>
+          นำทาง Google Maps
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== แผงรายละเอียดอำเภอ + บทประพันธ์ ===== -->
+  <div id="district" class="detail" aria-hidden="true">
+    <div class="detail-scrim" id="districtScrim"></div>
+    <div class="detail-card" role="dialog" aria-modal="true" aria-labelledby="districtTitle">
+      <button id="districtClose" class="detail-close" aria-label="ปิด">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29l-1.41 1.42L10.59 13.4l-6.3 6.3l-1.41-1.42L9.17 12L2.88 5.71L4.29 4.3l6.3 6.29l6.29-6.29z"/></svg>
+      </button>
+      <div id="districtHero" class="detail-hero district-hero">
+        <div class="detail-hero-overlay">
+          <span class="detail-district">อำเภอ</span>
+          <h2 id="districtTitle" class="detail-title"></h2>
+          <p id="districtTagline" class="district-tagline"></p>
+        </div>
+      </div>
+      <div id="districtBody" class="district-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== โมดัลจัดการรูป (อัปโหลดเอง) ===== -->
+  <div id="admin" class="admin hidden">
+    <div class="admin-scrim" id="adminScrim"></div>
+    <div class="admin-card" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <div class="admin-head">
+        <h2 id="adminTitle">📤 จัดการอัพโหลด</h2>
+        <button id="adminClose" class="detail-close" aria-label="ปิด">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29l-1.41 1.42L10.59 13.4l-6.3 6.3l-1.41-1.42L9.17 12L2.88 5.71L4.29 4.3l6.3 6.29l6.29-6.29z"/></svg>
+        </button>
+      </div>
+
+      <div class="admin-folder">
+        <button id="adminConnect" class="btn-folder">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg>
+          เชื่อมต่อโฟลเดอร์ images
+        </button>
+        <span class="admin-folder-state">สถานะ: <strong id="adminFolderState">ยังไม่ได้เชื่อมต่อ</strong></span>
+      </div>
+      <p class="admin-hint">เลือกโฟลเดอร์ <code>images</code> ในโปรเจกต์ครั้งเดียว แล้วอัปโหลดรูปแต่ละจุด — ไฟล์จะถูกบันทึกลงโฟลเดอร์จริง ใครเปิดเว็บก็เห็น (รองรับ Chrome / Edge)</p>
+      <p id="adminMsg" class="admin-msg"></p>
+
+      <div class="admin-tabs" role="tablist">
+        <button class="admin-tab active" data-atab="image">🖼️ รูปสถานที่</button>
+        <button class="admin-tab" data-atab="audio">🎵 เสียงบทประพันธ์</button>
+      </div>
+
+      <div id="adminList" class="admin-list"></div>
+      <div id="adminAudioList" class="admin-list hidden"></div>
+    </div>
+  </div>
+
+  <!-- เลเยอร์คอนเฟตตี / ฉลอง -->
+  <canvas id="confetti" class="confetti-canvas"></canvas>
+  <div id="celebrate" class="celebrate hidden">
+    <div class="celebrate-card">
+      <div id="celebrateMascot" class="celebrate-mascot"></div>
+      <h2>เก่งมาก! 🎉</h2>
+      <p>คุณเก็บดวงตราครบทั้ง 12 แห่งของเส้นทางจีโอพาร์คโคราชแล้ว!<br/>ยลดาและทีมขอมอบรางวัล “นักสำรวจจีโอพาร์คตัวจริง”</p>
+      <button id="celebrateClose" class="btn-start">เยี่ยมเลย!</button>
+    </div>
+  </div>
+
+  <script src="config.js?v=5"></script>
+  <script src="data.js?v=5"></script>
+  <script src="districts.js?v=5"></script>
+  <script src="app.js?v=5"></script>
+  <script src="admin.js?v=5"></script>
+</body>
+</html>

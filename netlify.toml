@@ -1,0 +1,10 @@
+# ตั้งค่า Netlify — เว็บนี้เป็น static site ล้วน ไม่ต้อง build
+[build]
+  publish = "."
+  command = ""
+
+# กันไม่ให้ manifest.json (โหมดในเครื่อง) ถูก cache จนรูปไม่อัปเดต
+[[headers]]
+  for = "/images/manifest.json"
+  [headers.values]
+    Cache-Control = "no-cache"
