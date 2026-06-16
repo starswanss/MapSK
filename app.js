@@ -20,6 +20,11 @@ function accessorySVG(type, color) {
 }
 
 function mascotSVG(c, size = 96) {
+  // ถ้ามีรูปโปรไฟล์ที่อัปโหลด → ใช้รูปจริงแทนการ์ตูน
+  if (c && c.photo) {
+    return `<img class="mascot-photo" src="${c.photo}" alt="${c.name}"
+      style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.18);display:inline-block;vertical-align:middle" />`;
+  }
   const { color, hair, accessory } = c;
   return `
   <svg viewBox="0 0 96 96" width="${size}" height="${size}" class="mascot-svg" role="img" aria-label="ตัวละคร ${c.name}">
@@ -172,6 +177,22 @@ function renderCrew() {
   document.getElementById("yoladaBubbleMascot").innerHTML = mascotSVG(y, 60);
   document.getElementById("celebrateMascot").innerHTML = mascotSVG(y, 120);
 }
+
+// รายชื่อตัวละครทั้งหมด (รวมแม่หน่อยจากโหมดผจญภัย) — ใช้กับระบบอัปโหลดรูปตัวละคร
+function allCharacters() {
+  const list = [
+    { id: "yolada", c: CHARACTERS.yolada },
+    { id: "mesaya", c: CHARACTERS.mesaya },
+    { id: "panya", c: CHARACTERS.panya },
+    { id: "thanchanok", c: CHARACTERS.thanchanok }
+  ];
+  if (typeof MAE_NOY !== "undefined") list.push({ id: "maenoy", c: MAE_NOY });
+  return list;
+}
+function getCharacter(id) { const f = allCharacters().find(x => x.id === id); return f ? f.c : null; }
+
+// เรนเดอร์มาสคอตใหม่ทุกจุด (หลังอัปโหลด/ลบรูปตัวละคร)
+function refreshMascots() { if (document.getElementById("crewYolada")) renderCrew(); }
 
 /* ---------- 5) รายการสถานที่ ---------- */
 function renderPlaceList() {

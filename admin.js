@@ -20,12 +20,13 @@
   const PASSCODE = (C.ADMIN_PASSCODE || "").trim();
   const LS_MIRROR = "yolada_manifests_v2";
 
-  // นิยามชนิดไฟล์ 2 แบบ
+  // นิยามชนิดไฟล์ 3 แบบ
   const KINDS = {
-    image: { manifestFile: "manifest.json", listId: "adminList" },
-    audio: { manifestFile: "audio.json",    listId: "adminAudioList" }
+    image: { manifestFile: "manifest.json",     listId: "adminList" },
+    audio: { manifestFile: "audio.json",        listId: "adminAudioList" },
+    char:  { manifestFile: "characters.json",   listId: "adminCharList" }
   };
-  let manifests = { image: {}, audio: {} };   // { kind: { key: {file,t} } }
+  let manifests = { image: {}, audio: {}, char: {} };   // { kind: { key: {file,t} } }
   let unlocked = !PASSCODE;
   let curTab = "image";
 
@@ -33,6 +34,7 @@
   const slug = k => String(k).replace(/\./g, "-");
   const imageName = id => `place-${pad(id)}.jpg`;
   const audioName = (key, ext) => `audio-${slug(key)}.${ext || "mp3"}`;
+  const charName = key => `char-${slug(key)}.jpg`;
 
   /* ===================== backend (cloud / local) ===================== */
   let supa = null, dirHandle = null;
@@ -103,15 +105,19 @@
       const p = PLACES.find(x => x.id === key); if (!p) return;
       p.image = url; p.photoUrl = null;
       if (typeof applyPhoto === "function") applyPhoto(p);
-    } else {
+    } else if (kind === "audio") {
       const c = (typeof getComposition === "function") ? getComposition(key) : null; if (!c) return;
       c.audio = url;
       if (typeof applyAudio === "function") applyAudio(c);
+    } else if (kind === "char") {
+      const ch = (typeof getCharacter === "function") ? getCharacter(key) : null; if (!ch) return;
+      ch.photo = url;
     }
   }
   function applyAll() {
     PLACES.forEach(p => applyEntry("image", p.id));
     if (typeof COMPOSITIONS !== "undefined") COMPOSITIONS.forEach(c => applyEntry("audio", c.id));
+    if (typeof allCharacters === "function") { allCharacters().forEach(({ id }) => applyEntry("char", id)); if (typeof refreshMascots === "function") refreshMascots(); }
   }
 
   /* ===================== ย่อรูป ===================== */
@@ -153,22 +159,24 @@
 
   async function uploadFor(kind, key) {
     if (!checkPasscode()) return;
-    const file = await pickFile(kind === "image" ? "image/*" : "audio/*");
+    const file = await pickFile(kind === "audio" ? "audio/*" : "image/*");
     if (!file) return;
     if (kind === "audio" && file.size > AUDIO_MAX_MB * 1024 * 1024) { setMsg(`ไฟล์เสียงใหญ่เกิน ${AUDIO_MAX_MB} MB`, true); return; }
     setMsg("กำลังบันทึก…");
     try {
       let name, blob, type;
-      if (kind === "image") {
-        blob = await resizeToJpeg(file); name = imageName(key); type = "image/jpeg";
-      } else {
+      if (kind === "audio") {
         const ext = (file.name.split(".").pop() || "mp3").toLowerCase().replace(/[^a-z0-9]/g, "");
         blob = file; name = audioName(key, ext); type = file.type || "audio/mpeg";
+      } else {
+        blob = await resizeToJpeg(file); type = "image/jpeg";
+        name = kind === "char" ? charName(key) : imageName(key);
       }
       await backendSaveFile(name, blob, type);
       manifests[kind][key] = { file: name, t: Date.now() };
       await backendSaveManifest(kind);
       applyEntry(kind, key); renderRows(kind);
+      if (kind === "char" && typeof refreshMascots === "function") refreshMascots();
       setMsg("บันทึกเรียบร้อย ✓");
     } catch (e) { console.warn(e); setMsg("บันทึกไม่สำเร็จ: " + (e.message || e), true); }
   }
@@ -182,6 +190,7 @@
       delete manifests[kind][key];
       await backendSaveManifest(kind);
       applyEntry(kind, key); renderRows(kind);
+      if (kind === "char" && typeof refreshMascots === "function") refreshMascots();
       setMsg("ลบแล้ว");
     } catch (err) { console.warn(err); setMsg("ลบไม่สำเร็จ: " + (err.message || err), true); }
   }
@@ -209,7 +218,7 @@
             <button class="admin-mini danger" data-act="rm" data-kind="image" data-id="${p.id}" ${has ? "" : "disabled"}>ลบ</button>
           </span></div>`;
       }).join("");
-    } else {
+    } else if (kind === "audio") {
       el.innerHTML = COMPOSITIONS.map(c => {
         const has = !!(manifests.audio[c.id] && manifests.audio[c.id].file);
         return `<div class="admin-row">
@@ -220,17 +229,28 @@
             <button class="admin-mini danger" data-act="rm" data-kind="audio" data-id="${c.id}" ${has ? "" : "disabled"}>ลบ</button>
           </span></div>`;
       }).join("");
+    } else if (kind === "char") {
+      const chars = (typeof allCharacters === "function") ? allCharacters() : [];
+      el.innerHTML = chars.map(({ id, c }) => {
+        const has = !!(manifests.char[id] && manifests.char[id].file);
+        return `<div class="admin-row">
+          <span class="admin-thumb">${(typeof mascotSVG === "function") ? mascotSVG(c, 56) : ""}</span>
+          <span class="admin-row-name">${c.name}<small>${c.role || c.skill || ""}${has ? " · มีรูปแล้ว ✓" : ""}</small></span>
+          <span class="admin-row-actions">
+            <button class="admin-mini" data-act="up" data-kind="char" data-id="${id}">${has ? "เปลี่ยนรูป" : "อัปโหลดรูป"}</button>
+            <button class="admin-mini danger" data-act="rm" data-kind="char" data-id="${id}" ${has ? "" : "disabled"}>ลบ</button>
+          </span></div>`;
+      }).join("");
     }
   }
 
   function switchTab(tab) {
     curTab = tab;
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.toggle("active", b.dataset.atab === tab));
-    document.getElementById("adminList").classList.toggle("hidden", tab !== "image");
-    document.getElementById("adminAudioList").classList.toggle("hidden", tab !== "audio");
+    Object.entries(KINDS).forEach(([k, info]) => { const el = document.getElementById(info.listId); if (el) el.classList.toggle("hidden", k !== tab); });
   }
 
-  function openModal() { renderRows("image"); renderRows("audio"); updateFolderUI(); modal.classList.remove("hidden"); }
+  function openModal() { renderRows("image"); renderRows("audio"); renderRows("char"); updateFolderUI(); modal.classList.remove("hidden"); }
   function closeModal() { modal.classList.add("hidden"); }
 
   /* ===================== init ===================== */
@@ -244,6 +264,7 @@
     }
     await backendLoadManifest("image");
     await backendLoadManifest("audio");
+    await backendLoadManifest("char");
     applyAll();
   }
 
@@ -262,6 +283,7 @@
     };
     document.getElementById("adminList")?.addEventListener("click", onListClick);
     document.getElementById("adminAudioList")?.addEventListener("click", onListClick);
+    document.getElementById("adminCharList")?.addEventListener("click", onListClick);
 
     init();
   });
